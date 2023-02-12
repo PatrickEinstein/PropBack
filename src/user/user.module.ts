@@ -7,6 +7,7 @@ import PortfolioItemSchema, {
   PortfolioItem,
 } from '../fund/schema/portfolio-item.schema';
 import KycSchema, { Kyc } from '../kyc/schema/kyc.schema';
+import PaymentSchema, { Payment } from '../payment/schema/payment.schema';
 import CategorySchema, { Category } from '../project/schema/category.schema';
 import FavouriteProjectSchema, {
   FavouriteProject,
@@ -23,6 +24,7 @@ import { UserService } from './user.service';
       { name: Kyc.name, schema: KycSchema },
       { name: User.name, schema: UserSchema },
       { name: Funder.name, schema: FunderSchema },
+      { name: Payment.name, schema: PaymentSchema },
       { name: Project.name, schema: ProjectSchema },
       { name: Category.name, schema: CategorySchema },
       { name: PortfolioItem.name, schema: PortfolioItemSchema },
@@ -36,6 +38,7 @@ import { UserService } from './user.service';
       { name: Kyc.name, schema: KycSchema },
       { name: User.name, schema: UserSchema },
       { name: Funder.name, schema: FunderSchema },
+      { name: Payment.name, schema: PaymentSchema },
       { name: Project.name, schema: ProjectSchema },
       { name: Category.name, schema: CategorySchema },
       { name: PortfolioItem.name, schema: PortfolioItemSchema },
