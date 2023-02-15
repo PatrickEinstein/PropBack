@@ -1,14 +1,13 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import { PaymentStatus } from '../../nowpayment/types';
 import { FunderDocument } from '../../user/schema/funder.schema';
 
 export type PaymentDocument = mongoose.HydratedDocument<Payment> & {
   updatedAt: Date;
   createdAt: Date;
 };
-
-export type PaymentStatus = 'pending' | 'completed' | 'failed';
 
 @Schema({
   timestamps: true,
@@ -59,8 +58,8 @@ export class Payment {
 
   @Prop({
     type: String,
-    default: 'pending',
-    enum: ['pending', 'completed', 'failed'],
+    default: PaymentStatus.Waiting,
+    enum: Object.values(PaymentStatus),
   })
   status: PaymentStatus;
 }

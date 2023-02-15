@@ -103,18 +103,6 @@ export class FundService extends BaseService {
         throw new BadRequestException('Could not fund project');
       }
 
-      // const item = await this.portfolioItemModel.create([
-      //   {
-      //     user: user.funder._id,
-      //     project: projectId,
-      //     transaction: transaction._id,
-      //     status: 'active',
-      //   },
-      // ]);
-      // if (!item) {
-      //   throw new BadRequestException('Could not fund project');
-      // }
-
       const token = await this.paymentProvider.getAuthorizationToken();
       const data = await this.paymentProvider.getPaymentAddress(
         {

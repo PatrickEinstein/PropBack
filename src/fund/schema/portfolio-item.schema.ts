@@ -9,7 +9,7 @@ export type PortfolioItemDocument = mongoose.HydratedDocument<PortfolioItem> & {
   createdAt: Date;
 };
 
-export type PortfolioItemStatus = 'active' | 'sold' | 'pending' | 'failed';
+export type PortfolioItemStatus = 'active' | 'paid' | 'completed';
 
 @Schema({
   timestamps: true,
@@ -46,18 +46,10 @@ export class PortfolioItem {
   @Prop({
     type: String,
     required: [true, 'portfolio item status is required'],
-    enum: ['active', 'sold', 'pending', 'failed'],
-    default: 'pending',
+    enum: ['active', 'paid', 'completed'],
+    default: 'active',
   })
   status: PortfolioItemStatus;
-
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: PortfolioItem.name,
-  })
-  item:
-    | mongoose.Schema.Types.ObjectId
-    | mongoose.LeanDocument<PortfolioItemDocument>;
 }
 
 const PortfolioItemSchema = SchemaFactory.createForClass(PortfolioItem);
@@ -67,7 +59,6 @@ PortfolioItemSchema.index({
   project: 1,
   transaction: 1,
   status: 1,
-  item: 1,
 });
 
 export default PortfolioItemSchema;

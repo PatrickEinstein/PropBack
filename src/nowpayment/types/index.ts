@@ -22,9 +22,21 @@ export interface GetPaymentAddressResponse {
   expiration_estimate_date: string;
 }
 
+export enum PaymentStatus {
+  Waiting = 'waiting',
+  Confirming = 'confirming',
+  Confirmed = 'confirmed',
+  Sending = 'sending',
+  PartiallyPaid = 'partially_paid',
+  Finished = 'finished',
+  Failed = 'failed',
+  Refunded = 'refunded',
+  Expired = 'expired',
+}
+
 export interface GetPaymentStatusResponse {
   payment_id: number;
-  payment_status: string;
+  payment_status: PaymentStatus;
   pay_address: string;
   price_amount: number;
   price_currency: string;

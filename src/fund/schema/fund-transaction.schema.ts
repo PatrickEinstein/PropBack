@@ -10,7 +10,7 @@ export type FundTransactionDocument =
     createdAt: Date;
   };
 
-export type FundTransactionStatus = 'pending' | 'approved' | 'rejected';
+export type FundTransactionStatus = 'pending' | 'approved' | 'cancelled';
 
 @Schema({
   timestamps: true,
@@ -55,7 +55,7 @@ export class FundTransaction {
 
   @Prop({
     type: String,
-    enum: ['approved', 'rejected', 'pending'],
+    enum: ['approved', 'cancelled', 'pending'],
     default: 'pending',
   })
   status: FundTransactionStatus;
