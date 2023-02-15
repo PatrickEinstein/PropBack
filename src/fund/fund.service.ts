@@ -14,7 +14,6 @@ import {
   FundTransaction,
   FundTransactionDocument,
 } from './schema/fund-transaction.schema';
-import { v4 as uuid } from 'uuid';
 import { FetchFundingDto } from './dto/fetch-funding.dto';
 import { BaseService } from '../common/BaseService';
 import {
@@ -23,6 +22,9 @@ import {
 } from './schema/portfolio-item.schema';
 import { FetchPortfolioDto } from './dto/fetch-portfolio.dto';
 import { FetchFundingHistoryDto } from './dto/fetch-funding-history.dto';
+import { ConfigService } from '@nestjs/config';
+import { Payment, PaymentDocument } from '../payment/schema/payment.schema';
+import { NowPaymentService } from '../nowpayment/nowpayment.service';
 
 @Injectable()
 export class FundService extends BaseService {
@@ -31,10 +33,13 @@ export class FundService extends BaseService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Funder.name) private funderModel: Model<FunderDocument>,
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    @InjectModel(Payment.name) private paymentModel: Model<PaymentDocument>,
     @InjectModel(FundTransaction.name)
     private fundTransactionModel: Model<FundTransactionDocument>,
     @InjectModel(PortfolioItem.name)
     private portfolioItemModel: Model<PortfolioItemDocument>,
+    private config: ConfigService,
+    private paymentProvider: NowPaymentService,
   ) {
     super();
   }
@@ -66,7 +71,7 @@ export class FundService extends BaseService {
       if (project.status !== 'active') {
         throw new BadRequestException('You can only fund an active project');
       }
-      const { amount } = dto;
+      const { amount, currency } = dto;
       if (project.progress + amount > project.fundingTarget) {
         throw new BadRequestException(
           'User input amount is greater than amount left',
@@ -85,7 +90,6 @@ export class FundService extends BaseService {
               user: user.funder._id,
               amount,
               project: projectId,
-              transactionHash: uuid(),
               sharePercentage,
             },
           ],
@@ -99,24 +103,54 @@ export class FundService extends BaseService {
         throw new BadRequestException('Could not fund project');
       }
 
-      const item = await this.portfolioItemModel.create([
+      // const item = await this.portfolioItemModel.create([
+      //   {
+      //     user: user.funder._id,
+      //     project: projectId,
+      //     transaction: transaction._id,
+      //     status: 'active',
+      //   },
+      // ]);
+      // if (!item) {
+      //   throw new BadRequestException('Could not fund project');
+      // }
+
+      const token = await this.paymentProvider.getAuthorizationToken();
+      const data = await this.paymentProvider.getPaymentAddress(
         {
-          user: user.funder._id,
-          project: projectId,
-          transaction: transaction._id,
-          status: 'active',
+          amount,
+          currency,
+          order_id: String(transaction._id),
         },
-      ]);
-      if (!item) {
-        throw new BadRequestException('Could not fund project');
-      }
+        token,
+      );
+
+      await this.paymentModel.create(
+        [
+          {
+            funder: user.funder._id,
+            address: data.pay_address,
+            currency: dto.currency,
+            amount: dto.amount,
+            transactionId: transaction._id,
+            paymentId: data.payment_id,
+          },
+        ],
+        { session },
+      );
 
       project.progress = project.progress + amount;
       await project.save({ session });
 
       await session.commitTransaction();
 
-      return { message: 'Project funded successfully' };
+      return {
+        message: 'Project space saved while transaction is to be completed',
+        data: {
+          address: data.pay_address,
+          expiresIn: data.expiration_estimate_date,
+        },
+      };
     } catch (err) {
       session.abortTransaction();
       throw err;

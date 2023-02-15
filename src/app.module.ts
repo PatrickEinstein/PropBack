@@ -11,6 +11,8 @@ import { UploadModule } from './upload/upload.module';
 import { KycModule } from './kyc/kyc.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AdminModule } from './admin/admin.module';
+import { PaymentService } from './payment/payment.service';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -32,8 +34,9 @@ import { AdminModule } from './admin/admin.module';
     KycModule,
     DashboardModule,
     AdminModule,
+    PaymentModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PaymentService],
 })
 export class AppModule {}

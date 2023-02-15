@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class FundProjectDto {
-  @IsNumber()
+export class CreatePaymentAddressDto {
   @IsNotEmpty()
+  @IsNumber()
   amount: number;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   currency: string;
 }

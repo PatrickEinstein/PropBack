@@ -35,9 +35,27 @@ export class Payment {
 
   @Prop({
     type: String,
+    required: [true, 'currency is required'],
+  })
+  currency: string;
+
+  @Prop({
+    type: String,
+    required: [true, 'amount is required'],
+  })
+  amount: string;
+
+  @Prop({
+    type: String,
     required: [true, 'transaction id is required'],
   })
   transactionId: string;
+
+  @Prop({
+    type: String,
+    required: [true, 'payment id is required'],
+  })
+  paymentId: string;
 
   @Prop({
     type: String,

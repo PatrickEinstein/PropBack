@@ -44,7 +44,6 @@ export class FundTransaction {
 
   @Prop({
     type: String,
-    required: true,
   })
   transactionHash: string;
 
